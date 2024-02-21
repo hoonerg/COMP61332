@@ -1,1 +1,2 @@
-# COMP61332
+# Code Repository for
+# COMP61332 Text Mining
