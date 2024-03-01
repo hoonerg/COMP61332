@@ -125,7 +125,8 @@ def main():
 def extract_training_data_from_dataframe(df):
     from dataset.read_dataset import get_training_label
 
-    X = df.apply(make_feature_vector_without_suffix, axis=1)
+    X = df.apply(make_feature_vector, axis=1)
+    #X = df.apply(make_feature_vector_without_suffix, axis=1)
     Y = df.apply(get_training_label, axis=1)
     X = np.array(X.tolist())
     Y = np.array(Y.tolist())

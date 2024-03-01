@@ -76,7 +76,6 @@ def normalize_sentence_without_suffix(row):
         else:
             new_sentence_tokenized.append(word)
     normalized_sentence_without_suffix = ' '.join(new_sentence_tokenized).strip()
-    # print(e1, e2, ' :  sentence :', sentence, 'new_sentence', normalized_sentence, '\n\n')
     return normalized_sentence_without_suffix
 
 
@@ -125,8 +124,8 @@ def get_dataset_dataframe(directory=None):
 
     pd.to_pickle(types, 'types')
     df = pd.DataFrame(lol, columns='sentence_text,e1,e2,relation_type'.split(','))
-    #df['normalized_sentence'] = df.apply(normalize_sentence, axis=1)
-    df['normalized_sentence_without_suffix'] = df.apply(normalize_sentence_without_suffix, axis=1)
+    df['normalized_sentence'] = df.apply(normalize_sentence, axis=1)
+    #df['normalized_sentence_without_suffix'] = df.apply(normalize_sentence_without_suffix, axis=1)
     df.to_csv(dataset_csv_file)
     df = pd.read_csv(dataset_csv_file)
     return df
