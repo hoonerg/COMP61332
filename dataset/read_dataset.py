@@ -62,7 +62,8 @@ def get_dataset_dataframe(directory=None):
     global types
 
     if directory is None:
-        directory = os.path.expanduser('~/ddi/dataset/DDICorpus/Train/DrugBank/')
+        # directory = os.path.expanduser('~/ddi/dataset/DDICorpus/Train/DrugBank/')
+        directory = os.path.join(os.getcwd(), "dataset/DDICorpus/Train/DrugBank/")
 
     dataset_csv_file_prefix = str(directory.split('/')[-3]).lower() + '_'
 
