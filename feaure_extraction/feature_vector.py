@@ -25,9 +25,9 @@ def get_dataset_dictionary():
     df = get_dataset_dataframe()
     word_counter = Counter()
     for _, row in df.iterrows():
-        unique_tokens = sorted(set(word for word in row.normalized_sentence.split()))
+        unique_tokens = sorted(set(word for word in row.normalized_sentence_without_suffix.split()))
         # exclude duplicates in same line and sort to ensure one word is always before other
-        bi_grams = ngrams(row.normalized_sentence.split(), 2)
+        bi_grams = ngrams(row.normalized_sentence_without_suffix.split(), 2)
         word_counter += Counter([' '.join(bi_gram).strip() for bi_gram in bi_grams])
         word_counter += Counter(unique_tokens)
     frequent_words = sorted(list(dict(word_counter.most_common(100000)).keys()))  # return the actual Counter object
@@ -42,7 +42,7 @@ def extract_top_word_pair_features():
         pair_counter = Counter()
         for _, row in df.iterrows():
 
-            unique_tokens = sorted(set(word for word in row.normalized_sentence.split()))
+            unique_tokens = sorted(set(word for word in row.normalized_sentence_without_suffix.split()))
             # exclude duplicates in same line and sort to ensure one word is always before other
             combos = combinations(unique_tokens, 2)
             pair_counter += Counter(combos)

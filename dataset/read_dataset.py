@@ -53,6 +53,32 @@ def normalize_sentence(row):
     # print(e1, e2, ' :  sentence :', sentence, 'new_sentence', normalized_sentence, '\n\n')
     return normalized_sentence
 
+def normalize_sentence_without_suffix(row):
+    #sentence = row.sentence_text.replace('.', ' . ')
+    sentence = sentence.replace(',', '')
+    e1 = row.e1
+    e2 = row.e2
+    new_sentence_tokenized = []
+    i = 0
+    for word in sentence.split():
+        if word in STOP_WORDS:
+            continue
+        if word.lower() == e1.lower():
+            new_sentence_tokenized.append('DRUG')
+            i += 1
+        elif word.lower() == e2.lower():
+            new_sentence_tokenized.append('OTHER_DRUG')
+            i += 1
+        elif i == 0:
+            new_sentence_tokenized.append(word)
+        elif i == 1:
+            new_sentence_tokenized.append(word)
+        else:
+            new_sentence_tokenized.append(word)
+    normalized_sentence_without_suffix = ' '.join(new_sentence_tokenized).strip()
+    # print(e1, e2, ' :  sentence :', sentence, 'new_sentence', normalized_sentence, '\n\n')
+    return normalized_sentence_without_suffix
+
 
 def get_dataset_dataframe(directory=None):
     global training_dataset_dataframe, dataset_csv_file
@@ -62,7 +88,7 @@ def get_dataset_dataframe(directory=None):
     global types
 
     if directory is None:
-        directory = os.path.expanduser('~/ddi/dataset/DDICorpus/Train/DrugBank/')
+        directory = os.path.expanduser('dataset/DDICorpus/Train/DrugBank/')
 
     dataset_csv_file_prefix = str(directory.split('/')[-3]).lower() + '_'
 
@@ -99,7 +125,8 @@ def get_dataset_dataframe(directory=None):
 
     pd.to_pickle(types, 'types')
     df = pd.DataFrame(lol, columns='sentence_text,e1,e2,relation_type'.split(','))
-    df['normalized_sentence'] = df.apply(normalize_sentence, axis=1)
+    #df['normalized_sentence'] = df.apply(normalize_sentence, axis=1)
+    df['normalized_sentence_without_suffix'] = df.apply(normalize_sentence_without_suffix, axis=1)
     df.to_csv(dataset_csv_file)
     df = pd.read_csv(dataset_csv_file)
     return df

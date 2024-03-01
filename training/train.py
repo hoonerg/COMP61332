@@ -87,6 +87,18 @@ def make_feature_vector(row):
     features.extend(syntactic_grammar_feature)
     return features
 
+def make_feature_vector_without_suffix(row):
+    normalized_sentence_without_suffix = row.normalized_sentence_without_suffix
+    sentence = row.sentence_text
+
+    word_feature = get_word_feature(normalized_sentence_without_suffix)
+    frequent_word_feature = get_frequent_word_pair_feature(normalized_sentence_without_suffix)
+    syntactic_grammar_feature = get_syntactic_grammar_feature(sentence)
+
+    features = word_feature
+    features.extend(frequent_word_feature)
+    features.extend(syntactic_grammar_feature)
+    return features
 
 def main():
     from dataset.read_dataset import get_dataset_dataframe
@@ -113,7 +125,7 @@ def main():
 def extract_training_data_from_dataframe(df):
     from dataset.read_dataset import get_training_label
 
-    X = df.apply(make_feature_vector, axis=1)
+    X = df.apply(make_feature_vector_without_suffix, axis=1)
     Y = df.apply(get_training_label, axis=1)
     X = np.array(X.tolist())
     Y = np.array(Y.tolist())
