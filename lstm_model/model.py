@@ -1,6 +1,5 @@
 import torch.nn as nn
 
-# Model Definition
 class LSTMRelationClassifier(nn.Module):
     def __init__(self, embedding_dim, hidden_dim, output_dim):
         super(LSTMRelationClassifier, self).__init__()

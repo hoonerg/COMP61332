@@ -41,9 +41,15 @@ class RelationDataset(Dataset):
 
 def collate_fn(batch):
     texts, labels = zip(*batch)
-    texts = nn.utils.rnn.pad_sequence(texts, batch_first=True, padding_value=0)
+    
+    max_len = max(text.size(0) for text in texts)
+    
+    padded_texts = torch.zeros(len(texts), max_len, texts[0].shape[1])
+    for i, text in enumerate(texts):
+        padded_texts[i, max_len - text.size(0):] = text
+    
     labels = torch.stack(labels)
-    return texts, labels
+    return padded_texts, labels
 
 def generate_loader(texts, labels, vocab, batch_size=32, shuffle=True):
     dataset = RelationDataset(texts, labels, vocab)
@@ -65,5 +71,5 @@ vocab = Vocabulary(word2vec)
 X_train, X_val, y_train, y_val = train_test_split(texts, labels, test_size=0.2, random_state=42)
 
 # Generate data loaders
-#train_loader = generate_loader(X_train, y_train, vocab)
-#val_loader = generate_loader(X_val, y_val, vocab, shuffle=False)
+train_loader = generate_loader(X_train, y_train, vocab, batch_size=32, shuffle=True)
+val_loader = generate_loader(X_val, y_val, vocab, batch_size=32, shuffle=False)
