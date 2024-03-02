@@ -19,7 +19,6 @@ def get_empty_vector(n):
 
 
 def get_top_word_dataset_dictionary():
-
     global dataset_dictionary
     if dataset_dictionary is None:
         dataset_dictionary = get_dataset_dictionary()
@@ -27,7 +26,6 @@ def get_top_word_dataset_dictionary():
 
 
 def get_top_word_pair_features():
-
     global top_word_pair_features
     if top_word_pair_features is None:
         top_word_pair_features = extract_top_word_pair_features()
@@ -35,7 +33,6 @@ def get_top_word_pair_features():
 
 
 def get_top_syntactic_grammar_list():
-
     global top_syntactic_grammar_list
     if top_syntactic_grammar_list is None:
         top_syntactic_grammar_list = extract_top_syntactic_grammar_trio()
@@ -81,8 +78,21 @@ def make_feature_vector(row):
     features.extend(syntactic_grammar_feature)
     return features
 
+def get_training_label(row):
+    global types
+
+    types = pd.read_pickle('types')
+    types = [t for t in types if t]
+    type_list = list(types)
+    relation_type = row.relation_type
+    X = [i for i, t in enumerate(type_list) if relation_type == t]
+    # s = np.sum(X)
+    if X:
+        return X[0]
+    else:
+        return 1
+
 def extract_training_data_from_dataframe(df):
-    from dataset.read_dataset import get_training_label
 
     X = df.apply(make_feature_vector, axis=1)
     Y = df.apply(get_training_label, axis=1)
