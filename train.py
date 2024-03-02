@@ -64,7 +64,7 @@ def main(model_type=None):
         model = LSTMRelationClassifier(embedding_dim=300, hidden_dim=128, output_dim=len(label_encoder.classes_)).to(device)
         optimizer = optim.Adam(model.parameters())
         criterion = nn.CrossEntropyLoss()
-        model_save_path = 'lstm_model/checkpoints/best_model.pth'
+        model_save_path = 'results/checkpoints/lstm_best_model.pth'
         
         # Early stopping
         early_stopping = EarlyStopping(patience=15, verbose=True, path=model_save_path)
