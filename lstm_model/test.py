@@ -4,7 +4,7 @@ import pandas as pd
 import os
 import pickle
 from model import LSTMRelationClassifier
-from data_vec import RelationDataset, collate_fn  # Adjust according to your project structure
+from data_vec import RelationDataset, collate_fn
 
 # Load vocab and label_encoder
 vocab_path = 'vocab.pkl'
@@ -14,8 +14,6 @@ with open(vocab_path, 'rb') as f:
 with open(label_encoder_path, 'rb') as f:
     label_encoder = pickle.load(f)
 
-# Assuming you have a function to load and preprocess your test data similar to your training data
-# For example:
 def load_test_data(test_data_path, vocab, label_encoder):
     test_dataset = pd.read_csv(test_data_path)
     texts = test_dataset['sentence_text'].values
@@ -38,7 +36,7 @@ model.eval()
 
 # Load test data
 test_data_path = 'test_for_ddi_extraction_task_dataset_dataframe.csv'
-test_loader = load_test_data(test_data_path, vocab, label_encoder)  # Ensure vocab and label_encoder are properly initialized
+test_loader = load_test_data(test_data_path, vocab, label_encoder)
 
 # Evaluate the model on the test set
 correct = 0

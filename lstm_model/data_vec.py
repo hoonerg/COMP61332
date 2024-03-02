@@ -7,7 +7,6 @@ from sklearn.preprocessing import LabelEncoder
 from gensim.models import KeyedVectors
 import numpy as np
 
-# Load the pre-trained Word2Vec model using Gensim's downloader
 word2vec_path = 'GoogleNews-vectors-negative300.bin.gz'
 word2vec = KeyedVectors.load_word2vec_format(word2vec_path, binary=True)
 
@@ -60,10 +59,9 @@ texts = dataset['normalized_sentence'].values
 label_encoder = LabelEncoder()
 labels = label_encoder.fit_transform(dataset['relation_type'].values)
 
-# Initialize Vocabulary with the pre-loaded Word2Vec model
+# Vocab with word2vec
 vocab = Vocabulary(word2vec)
 
-# Splitting dataset
 X_train, X_val, y_train, y_val = train_test_split(texts, labels, test_size=0.2, random_state=42)
 
 # Generate data loaders

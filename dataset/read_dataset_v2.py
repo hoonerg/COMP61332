@@ -85,7 +85,7 @@ def get_dataset_dataframe(directory=None):
 
             for sentence_dom in sentences:
                 entities = get_entities_with_char_offset(sentence_dom)
-                entity_dict = {e['id']: e for e in entities}  # Map entity IDs to their detailed info
+                entity_dict = {e['id']: e for e in entities}
                 pairs = sentence_dom.getElementsByTagName('pair')
                 sentence_text = sentence_dom.getAttribute('text')
                 for pair in pairs:
@@ -109,6 +109,6 @@ def get_dataset_dataframe(directory=None):
 
 
 if __name__ == "__main__":
-    directory = "dataset/DDICorpus/Train/merged_version/"
+    directory = "dataset/DDICorpus/Test/merged_version/"
     df = get_dataset_dataframe(directory)
     print(df.head())

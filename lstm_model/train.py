@@ -1,9 +1,9 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from data_vec import X_train, X_val, y_train, y_val, vocab, label_encoder, generate_loader  # Ensure this import works
-from model import LSTMRelationClassifier  # Ensure this import works
-from utils import EarlyStopping  # Importing EarlyStopping
+from data_vec import X_train, X_val, y_train, y_val, vocab, label_encoder, generate_loader
+from model import LSTMRelationClassifier
+from utils import EarlyStopping
 import os
 
 # Training
@@ -54,14 +54,12 @@ def save_checkpoint(state, filename="model_checkpoint.pth.tar"):
 def load_checkpoint(checkpoint, model, optimizer):
     model.load_state_dict(checkpoint['state_dict'])
     optimizer.load_state_dict(checkpoint['optimizer'])
-
-# Implement early stopping
+    
 model_save_path = 'lstm_model/checkpoints/best_model.pth'
 
 # Early stopping
 early_stopping = EarlyStopping(patience=10, verbose=True, path=model_save_path)
 
-# Adjust the number of epochs as needed
 num_epochs = 200
 
 checkpoint_dir = 'lstm_model/checkpoints/'
@@ -73,7 +71,6 @@ for epoch in range(num_epochs):
     # Log the training and validation loss
     print(f'Epoch: {epoch+1}, Training Loss: {train_loss:.4f}, Validation Loss: {val_loss:.4f}')
     
-    # Check early stopping condition
     early_stopping(val_loss, model)
     if early_stopping.early_stop:
         print("Early stopping")
@@ -82,7 +79,6 @@ for epoch in range(num_epochs):
 
 import pickle
 
-# Assuming vocab and label_encoder are your objects
 with open('vocab.pkl', 'wb') as f:
     pickle.dump(vocab, f)
 
