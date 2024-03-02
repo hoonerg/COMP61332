@@ -93,7 +93,6 @@ def get_training_label(row):
         return 1
 
 def extract_training_data_from_dataframe(df):
-
     X = df.apply(make_feature_vector, axis=1)
     Y = df.apply(get_training_label, axis=1)
     X = np.array(X.tolist())
