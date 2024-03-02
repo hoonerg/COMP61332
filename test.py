@@ -10,7 +10,7 @@ def predict(model_type=None):
 
     new_path = os.path.join(os.getcwd(), "dataset/DDICorpus/Test/test_for_ddi_extraction_task/DrugBank/")
     # df = get_dataset_dataframe(directory=os.path.expanduser('~/ddi/dataset/DDICorpus/Test/test_for_ddi_extraction_task/DrugBank/'))
-    dataset_path = 'dataset/train_dataset_dataframe.csv'
+    dataset_path = 'dataset/test_dataset_dataframe.csv'
     df = pd.read_csv(dataset_path)
     
     if model_type is None:
