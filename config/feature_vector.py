@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from nltk.util import ngrams
 
-from dataset.read_dataset import get_dataset_dataframe
 from grammar.chunker import Chunker
 from grammar.syntactic_grammar import PatternGrammar
 
@@ -17,12 +16,13 @@ import os
 from itertools import combinations
 from collections import Counter
 
+dataset_path = 'dataset/train_dataset_dataframe.csv'
+df = pd.read_csv(dataset_path)
 
 def get_dataset_dictionary():
     top_post_fixed_word_file = 'top_post_fixed_word.pkl'
     if os.path.isfile(top_post_fixed_word_file):
         return pd.read_pickle(top_post_fixed_word_file)
-    df = get_dataset_dataframe()
     word_counter = Counter()
     for _, row in df.iterrows():
         unique_tokens = sorted(set(word for word in row.normalized_sentence.split()))
@@ -38,7 +38,6 @@ def get_dataset_dictionary():
 def extract_top_word_pair_features():
     frequent_phrase_pickle_path = 'frequent_phrase.pkl'
     if not os.path.isfile(frequent_phrase_pickle_path):
-        df = get_dataset_dataframe()
         pair_counter = Counter()
         for _, row in df.iterrows():
 
@@ -60,7 +59,6 @@ def extract_top_syntactic_grammar_trio():
     if os.path.isfile(top_syntactic_grammar_trio_file):
         return pd.read_pickle(top_syntactic_grammar_trio_file)
 
-    df = get_dataset_dataframe()
     trio_counter = Counter()
     for _, row in df.iterrows():
         combos = extract_syntactic_grammar(row.sentence_text)
@@ -92,5 +90,4 @@ def extract_syntactic_grammar(sentence):
 
 
 # if __name__ == '__main__':
-#     df = get_dataset_dataframe()
 #     print(get_dataset_dictionary())
