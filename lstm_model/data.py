@@ -60,10 +60,10 @@ dataset_path = 'train_dataset_dataframe.csv'
 dataset = pd.read_csv(dataset_path)
 
 # Tokenization and Encoding
-texts = dataset['normalized_sentence_without_suffix'].values
+texts = dataset['normalized_sentence'].values
 label_encoder = LabelEncoder()
 labels = label_encoder.fit_transform(dataset['relation_type'].values)
 
 vocab = build_vocab(texts)
 X_train, X_val, y_train, y_val = train_test_split(texts, labels, test_size=0.2, random_state=42)
-print(X_train, "//", X_val, "//", y_train, "//", y_val)
+#print(X_train, "//", X_val, "//", y_train, "//", y_val)

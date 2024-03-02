@@ -4,11 +4,11 @@ import pandas as pd
 import os
 import pickle
 from model import LSTMRelationClassifier
-from data import RelationDataset, collate_fn  # Adjust according to your project structure
+from data_vec import RelationDataset, collate_fn  # Adjust according to your project structure
 
 # Load vocab and label_encoder
-vocab_path = '/Users/hoonchoi/main/Uni/Text_Mining/new_version/vocab.pkl'
-label_encoder_path = '/Users/hoonchoi/main/Uni/Text_Mining/new_version/label_encoder.pkl'
+vocab_path = 'vocab.pkl'
+label_encoder_path = 'label_encoder.pkl'
 with open(vocab_path, 'rb') as f:
     vocab = pickle.load(f)
 with open(label_encoder_path, 'rb') as f:
@@ -28,14 +28,16 @@ def load_test_data(test_data_path, vocab, label_encoder):
 
 # Load the saved model
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-model_save_path = '/Users/hoonchoi/main/Uni/Text_Mining/new_version/best_model.pth'
-model = LSTMRelationClassifier(len(vocab), embedding_dim=100, hidden_dim=128, output_dim=len(label_encoder.classes_))
+model_save_path = 'lstm_model/checkpoints/best_model.pth'
+model = LSTMRelationClassifier(embedding_dim=300,
+                               hidden_dim=128, 
+                               output_dim=len(label_encoder.classes_)).to(device)
 model.load_state_dict(torch.load(model_save_path, map_location=device))
 model.to(device)
 model.eval()
 
 # Load test data
-test_data_path = '/Users/hoonchoi/main/Uni/Text_Mining/new_version/test_dataset_dataframe.csv'
+test_data_path = 'test_for_ddi_extraction_task_dataset_dataframe.csv'
 test_loader = load_test_data(test_data_path, vocab, label_encoder)  # Ensure vocab and label_encoder are properly initialized
 
 # Evaluate the model on the test set

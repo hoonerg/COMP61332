@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from data import X_train, X_val, y_train, y_val, vocab, label_encoder, generate_loader  # Ensure this import works
+from data_vec import X_train, X_val, y_train, y_val, vocab, label_encoder, generate_loader  # Ensure this import works
 from model import LSTMRelationClassifier  # Ensure this import works
 from utils import EarlyStopping  # Importing EarlyStopping
 import os
@@ -42,7 +42,9 @@ val_loader = generate_loader(X_val, y_val, vocab, batch_size=32, shuffle=False)
 
 # Initialize model, optimizer, and criterion
 print(len(vocab))
-model = LSTMRelationClassifier(len(vocab), embedding_dim=100, hidden_dim=128, output_dim=len(label_encoder.classes_)).to(device)
+model = LSTMRelationClassifier(embedding_dim=300,
+                               hidden_dim=128, 
+                               output_dim=len(label_encoder.classes_)).to(device)
 optimizer = optim.Adam(model.parameters())
 criterion = nn.CrossEntropyLoss()
 
@@ -60,7 +62,7 @@ model_save_path = 'lstm_model/checkpoints/best_model.pth'
 early_stopping = EarlyStopping(patience=10, verbose=True, path=model_save_path)
 
 # Adjust the number of epochs as needed
-num_epochs = 50
+num_epochs = 200
 
 checkpoint_dir = 'lstm_model/checkpoints/'
 
