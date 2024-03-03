@@ -1,5 +1,5 @@
 import sys
-from train import main as training_main
+from train import main
 from test import predict
 import pandas as pd
 
