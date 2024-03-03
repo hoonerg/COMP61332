@@ -1,9 +1,12 @@
 from sklearn.metrics import classification_report
-
+import torch
 from dataset.dataset_lstm import load_test_data
-from training.train import extract_training_data_from_dataframe, trained_model_pickle_file
+from train import extract_training_data_from_dataframe, trained_model_pickle_file
 import pandas as pd
 import os
+import pickle
+from config.model import LSTMRelationClassifier
+from sklearn.metrics import f1_score, accuracy_score
 
 def predict(model_type=None):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')

@@ -64,7 +64,7 @@ def create_dataset(dataset):
 
     X_train, X_val, y_train, y_val = train_test_split(texts, labels, test_size=0.2, random_state=42)
 
-    return X_train, X_val, y_train, y_val
+    return X_train, X_val, y_train, y_val, label_encoder
 
 def load_test_data(test_dataset, vocab, label_encoder):
     texts = test_dataset['sentence_text'].values

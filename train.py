@@ -11,16 +11,18 @@ from nltk import ngrams
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
 from dataset.dataset_svm import extract_training_data_from_dataframe
-from dataset.dataset_lstm import create_dataset, generate_loader, vocab, label_encoder
+from dataset.dataset_lstm import create_dataset, generate_loader, vocab
 from config.model import LSTMRelationClassifier
 from config.utils import EarlyStopping, evaluate
 import os
 import pickle
 import numpy as np
 
+
 trained_model_pickle_file = 'trained_model.pkl'
 
 def main(model_type=None):
+    import pandas as pd
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     dataset_path = 'dataset/train_dataset_dataframe.csv'
@@ -55,7 +57,7 @@ def main(model_type=None):
         print("Training LSTM model...")
 
         # Generate data loaders
-        X_train, X_val, y_train, y_val = create_dataset(df)
+        X_train, X_val, y_train, y_val, label_encoder = create_dataset(df)
         
         train_loader = generate_loader(df, X_train, y_train, vocab, batch_size=32, shuffle=True)
         val_loader = generate_loader(df, X_val, y_val, vocab, batch_size=32, shuffle=False)

@@ -9,6 +9,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
 from config.feature_vector import get_dataset_dictionary, extract_top_word_pair_features, extract_top_syntactic_grammar_trio, extract_syntactic_grammar
 import numpy as np
+import pandas as pd
 
 dataset_dictionary = None
 top_word_pair_features = None
@@ -81,7 +82,7 @@ def make_feature_vector(row):
 def get_training_label(row):
     global types
 
-    types = pd.read_pickle('types')
+    types = pd.read_pickle('types.pkl')
     types = [t for t in types if t]
     type_list = list(types)
     relation_type = row.relation_type
