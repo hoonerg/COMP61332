@@ -11,7 +11,7 @@ from nltk import ngrams
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
 from dataset.dataset_svm import extract_training_data_from_dataframe
-from dataset.dataset_lstm import create_dataset, generate_loader, vocab
+from dataset.dataset_lstm import RelationDataset, create_dataset, generate_loader, vectorize_words, vocab
 from config.model import LSTMRelationClassifier
 from config.utils import EarlyStopping, evaluate
 import os
@@ -34,30 +34,46 @@ def main(model_type=None):
     if model_type == "SVM":
         print("Training SVM model...")
 
-        X, Y = extract_training_data_from_dataframe(df)
-
         from sklearn.svm import SVC
-        X_train, X_test, y_train, y_test = \
-            train_test_split(X, Y, test_size=.2, random_state=42)
+        # X_train, X_test, y_train, y_test = \
+        #     train_test_split(X, Y, test_size=.2, random_state=42)
+        
+        # Both X_train and y_train are numpy arrays   
+        X_train, X_test, y_train, y_test, label_encoder = create_dataset(df)
+        dataset_1 = RelationDataset(X_train, y_train, vocab)
+        # dataset_2 = RelationDataset(X_test, y_test, vocab)
+        sent = 'Alcohol: post marketing experience rare reports adverse neuropsychiatric events reduced alcohol tolerance patients drinking DRUG treatment OTHER_DRUG .'
+        print("HEYO:- ", vectorize_words(sent).shape, vectorize_words(sent))
+        # print("TYPES of X and Y:- ", type(X_train), type(y_train))
+        # print('X: ', X_train[0:2])
+        # print('Y: ', y_train)
+        
+        print('Sentences 1:- ', dataset_1[3][0])
+        # print('Sentences 2:- ', dataset_1[0][1])
+        # np.apply_along_axis(vectorize_words, 1, X_train)
+           
+        # px = pd.DataFrame(dataset.dir())
+        # print(px.head(), px.shape)
+        # X, Y = extract_training_data_from_dataframe(df)
 
-        print(df.head())
-        print('X: ', (X.shape), 'Y : ', np.array(Y.shape))
-        model = SVC(kernel='linear')
-        model.fit(X_train, y_train)
-        score = model.score(X_test, y_test)
-        import pandas as pd
+        
+        # print('X: ', (X_train.shape), 'Y : ', np.array(y_train.shape))
+        
+        # model = SVC(kernel='linear')
+        # model.fit(dataset_1, y_train)
+        # score = model.score(dataset_2, y_test)
+        # import pandas as pd
 
-        pd.to_pickle(model, trained_model_pickle_file)
-        # classification_report()
-        print('Score : ', score)
-        y_pred = model.predict(X_test)
-        print(classification_report(y_test, y_pred))
+        # # pd.to_pickle(model, trained_model_pickle_file)
+        # # classification_report()
+        # print('Score : ', score)
+        # y_pred = model.predict(dataset_2)
+        # print(classification_report(y_test, y_pred))
 
     elif model_type == "LSTM":
         print("Training LSTM model...")
 
         # Generate data loaders
-        X_train, X_val, y_train, y_val, label_encoder = create_dataset(df)
         
         train_loader = generate_loader(df, X_train, y_train, vocab, batch_size=32, shuffle=True)
         val_loader = generate_loader(df, X_val, y_val, vocab, batch_size=32, shuffle=False)
