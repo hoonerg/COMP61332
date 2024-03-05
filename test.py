@@ -1,9 +1,10 @@
 from sklearn.metrics import classification_report
+from dataset.dataset_svm import vectorize_sentence, get_test_dataset
 import torch
-from dataset.dataset_lstm import get_test_dataset, load_test_data, \
-                            vectorize_sentence, load_test_data, UserInputDataset
+from dataset.dataset_lstm import load_test_data, UserInputDataset
+                            
 from torch.utils.data import DataLoader
-from train import extract_training_data_from_dataframe, trained_model_pickle_file
+from train import trained_model_pickle_file
 import pandas as pd
 import os
 import pickle

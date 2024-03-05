@@ -11,9 +11,9 @@ from nltk import ngrams
 from sklearn.svm import SVC
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
-from dataset.dataset_svm import extract_training_data_from_dataframe
-from dataset.dataset_lstm import RelationDataset, create_dataset, \
-                    find_max_word_length, generate_loader, vectorize_sentence, vocab
+# from dataset.dataset_svm import extract_training_data_from_dataframe
+from dataset.dataset_svm import find_max_word_length, vectorize_sentence
+from dataset.dataset_lstm import create_dataset, generate_loader, vocab
 from config.model import LSTMRelationClassifier
 from config.utils import EarlyStopping, evaluate
 import os

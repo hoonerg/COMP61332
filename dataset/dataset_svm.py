@@ -1,101 +1,65 @@
-# -*- coding: utf-8 -*-
-from itertools import combinations
-
-from nltk import ngrams
-# from sklearn.cross_validation import train_test_split
-# In the new version, the train test split function 
-# is moved into sklearn.model_selection
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import classification_report
-from config.feature_vector import get_dataset_dictionary, extract_top_word_pair_features, extract_top_syntactic_grammar_trio, extract_syntactic_grammar
-import numpy as np
 import pandas as pd
+from sklearn.preprocessing import LabelEncoder
+from dataset.dataset_lstm import Vocabulary
+from gensim.models import KeyedVectors
+import numpy as np
 
-dataset_dictionary = None
-top_word_pair_features = None
-top_syntactic_grammar_list = None
+word2vec_path = 'GoogleNews-vectors-negative300.bin.gz'
+word2vec = KeyedVectors.load_word2vec_format(word2vec_path, binary=True)
+vocab = Vocabulary(word2vec)
 
-def get_empty_vector(n):
-    return [0 for _ in range(n)]
+def find_max_word_length(sentences):
+    max_lengths = []
+    for sentence in sentences:
+        # Splitting the sentence into words and finding the length of each word
+        word_lengths = [len(word) for word in sentence.split()]
+        # Finding the maximum length in the current sentence
+        max_length = max(word_lengths)
+        max_lengths.append(max_length)
+    return max(max_lengths)
 
+def vectorize_sentence(sentences, max_length= 30):
+    vector_lists = []
+    
+    for sentence in sentences:
+        vector = vectorize_words(sentence, max_length)
+        vector_lists.append(vector)
+    
+    # Conversion to a 2-D numpy array of size (number of sentences, no: of features) 
+    return np.array(vector_lists)
+        
+def vectorize_words(sentence, max_length=30):
+    tokens = sentence.split()
+    vector_size = None
+    # vectorized_text consists of the feature vector representation of each word, 
+    # after truncation and padding the sentence to max_length
+    vectorized_text = []
+    
+    # Process each word in the sentence
+    for word in tokens:
+        try:
+            vector = vocab.get_vector(word)
+            if vector_size is None:
+                vector_size = len(vector)
+            vectorized_text.append(vector)
+        except KeyError:
+            continue
+        
+        # If we've reached the desired length, stop processing
+        if len(vectorized_text) == max_length:
+            break
+ 
+    # Pad with zero vectors if needed
+    while len(vectorized_text) < max_length:
+        vectorized_text.append(np.zeros(vector_size))
+    
+    # Flatten the list of vectors into a single vector
+    return np.array(vectorized_text).flatten()
 
-def get_top_word_dataset_dictionary():
-    global dataset_dictionary
-    if dataset_dictionary is None:
-        dataset_dictionary = get_dataset_dictionary()
-    return dataset_dictionary
-
-
-def get_top_word_pair_features():
-    global top_word_pair_features
-    if top_word_pair_features is None:
-        top_word_pair_features = extract_top_word_pair_features()
-    return top_word_pair_features
-
-
-def get_top_syntactic_grammar_list():
-    global top_syntactic_grammar_list
-    if top_syntactic_grammar_list is None:
-        top_syntactic_grammar_list = extract_top_syntactic_grammar_trio()
-    return top_syntactic_grammar_list
-
-
-def get_word_feature(normalized_sentence):
-    unique_tokens = set(word for word in normalized_sentence.split())
-    # exclude duplicates in same line and sort to ensure one word is always before other
-    bi_grams = set(ngrams(normalized_sentence.split(), 2))
-    words = unique_tokens | bi_grams
-    dataset_dictionary = get_top_word_dataset_dictionary()
-    X = [i if j in words else 0 for i, j in enumerate(dataset_dictionary)]
-    return X
-
-
-def get_frequent_word_pair_feature(normalized_sentence):
-    unique_tokens = sorted(set(word for word in normalized_sentence.split()))
-    # exclude duplicates in same line and sort to ensure one word is always before other
-    combos = combinations(unique_tokens, 2)
-    top_word_pair_features = get_top_word_pair_features()
-    X = [i if j in combos else 0 for i, j in enumerate(top_word_pair_features)]
-    return X
-
-
-def get_syntactic_grammar_feature(sentence_text):
-    trigrams_list = extract_syntactic_grammar(sentence_text)
-    top_syntactic_grammar_list = get_top_syntactic_grammar_list()
-    X = [i if j in trigrams_list else 0 for i, j in enumerate(top_syntactic_grammar_list)]
-    return X
-
-
-def make_feature_vector(row):
-    normalized_sentence = row.normalized_sentence
-    sentence = row.sentence_text
-
-    word_feature = get_word_feature(normalized_sentence)
-    frequent_word_feature = get_frequent_word_pair_feature(normalized_sentence)
-    syntactic_grammar_feature = get_syntactic_grammar_feature(sentence)
-
-    features = word_feature
-    features.extend(frequent_word_feature)
-    features.extend(syntactic_grammar_feature)
-    return features
-
-def get_training_label(row):
-    global types
-
-    types = pd.read_pickle('types.pkl')
-    types = [t for t in types if t]
-    type_list = list(types)
-    relation_type = row.relation_type
-    X = [i for i, t in enumerate(type_list) if relation_type == t]
-    # s = np.sum(X)
-    if X:
-        return X[0]
-    else:
-        return 1
-
-def extract_training_data_from_dataframe(df):
-    X = df.apply(make_feature_vector, axis=1)
-    Y = df.apply(get_training_label, axis=1)
-    X = np.array(X.tolist())
-    Y = np.array(Y.tolist())
-    return X, Y
+def get_test_dataset(dataset):
+    X = dataset['normalized_sentence'].values
+    label_encoder = LabelEncoder()
+    y = label_encoder.fit_transform(dataset['relation_type'].values)
+    
+    return X, y
+  
