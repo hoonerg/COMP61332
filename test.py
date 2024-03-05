@@ -76,15 +76,20 @@ def predict(model_type=None, user_input=None):
                     all_predictions.extend(predicted.cpu().numpy())
                     all_labels.extend(labels.cpu().numpy())
 
-            accuracy = accuracy_score(all_labels, all_predictions) * 100
-            f1_scores = f1_score(all_labels, all_predictions, average=None)
+            overall_f1_score = f1_score(all_labels, all_predictions, average='micro') * 100
 
-            print(f'Accuracy on test data: {accuracy}%')
-            for i, score in enumerate(f1_scores):
+            # Calculate F1 scores for each class without averaging
+            f1_scores_by_class = f1_score(all_labels, all_predictions, average=None)
+
+            # Print overall F1 score
+            print(f'Overall F1 Score on test data: {overall_f1_score:.2f}%')
+
+            # Print F1 score for each class
+            for i, score in enumerate(f1_scores_by_class):
                 class_name = label_encoder.inverse_transform([i])[0]
-                print(f'F1 score for class {class_name}: {score}')
+                print(f'F1 score for class {class_name}: {score:.4f}')
 
-            return accuracy, f1_scores
+            return overall_f1_score, f1_scores_by_class
 
     else:
         print(f"{model_type} is not supported.")
