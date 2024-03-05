@@ -94,6 +94,19 @@ def get_test_dataset(dataset):
     
     return X, y
     
+class UserInputDataset(Dataset):
+    def __init__(self, texts, vocab):
+        self.texts = [texts]  # 단일 입력을 리스트로 변환
+        self.vocab = vocab
+
+    def __len__(self):
+        return len(self.texts)
+
+    def __getitem__(self, item):
+        vectorized_text = [self.vocab.get_vector(word) for word in self.texts[item].split()]
+        vectorized_text = np.stack(vectorized_text)
+        return torch.tensor(vectorized_text, dtype=torch.float)
+        
 def collate_fn(batch):
     texts, labels = zip(*batch)
     
@@ -131,6 +144,3 @@ def load_test_data(test_dataset, vocab, label_encoder):
 
 # Vocab with word2vec
 vocab = Vocabulary(word2vec)
-
-
-
