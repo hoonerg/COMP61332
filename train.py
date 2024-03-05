@@ -56,6 +56,7 @@ def main(model_type=None):
         print("Training LSTM model...")
 
         # Generate data loaders
+        X_train, X_val, y_train, y_val, label_encoder = create_dataset(df)
         
         train_loader = generate_loader(df, X_train, y_train, vocab, batch_size=32, shuffle=True)
         val_loader = generate_loader(df, X_val, y_val, vocab, batch_size=32, shuffle=False)
