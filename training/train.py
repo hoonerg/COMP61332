@@ -26,6 +26,7 @@ def get_top_word_dataset_dictionary():
     global dataset_dictionary
     if dataset_dictionary is None:
         dataset_dictionary = get_dataset_dictionary()
+        
     return dataset_dictionary
 
 
@@ -52,7 +53,14 @@ def get_word_feature(normalized_sentence):
     # exclude duplicates in same line and sort to ensure one word is always before other
     bi_grams = set(ngrams(normalized_sentence.split(), 2))
     words = unique_tokens | bi_grams
+    # Example of bigrams: [("Concurrent_bf", "therapy_bf"), 
+    # ("therapy_bf", "DRUG"), ("DRUG", "TNF_be"), 
+    # ("TNF_be", "antagonists_be"), ("antagonists_be", "recommended_be"), 
+    # ("recommended_be", "._be")]
     dataset_dictionary = get_top_word_dataset_dictionary()
+    # dataset_dictionary has dictionary of most Top post fixed word/bigrams
+    # If the word/bigram is present in dataset_dictionary, then it assigns its key
+    # as the numerical representation
     X = [i if j in words else 0 for i, j in enumerate(dataset_dictionary)]
     return X
 
@@ -61,7 +69,11 @@ def get_frequent_word_pair_feature(normalized_sentence):
     unique_tokens = sorted(set(word for word in normalized_sentence.split()))
     # exclude duplicates in same line and sort to ensure one word is always before other
     combos = combinations(unique_tokens, 2)
+    
+    # top_word_pair_features, will have the most common occuring combinations (2) of
+    # the different tokens in normalized form. 
     top_word_pair_features = get_top_word_pair_features()
+    
     X = [i if j in combos else 0 for i, j in enumerate(top_word_pair_features)]
     return X
 
@@ -78,8 +90,11 @@ def make_feature_vector(row):
     normalized_sentence = row.normalized_sentence
     sentence = row.sentence_text
 
-    word_feature = get_word_feature(normalized_sentence)
-    frequent_word_feature = get_frequent_word_pair_feature(normalized_sentence)
+    # W.r.t most common occuring bigrams/unique tokens within normalized sentence
+    word_feature = get_word_feature(sentence)
+    # W.r.t frequently occuring COMBINATIONS of the tokens within normalized sentence
+    frequent_word_feature = get_frequent_word_pair_feature(sentence)
+    
     syntactic_grammar_feature = get_syntactic_grammar_feature(sentence)
 
     features = word_feature
@@ -91,13 +106,17 @@ def make_feature_vector(row):
 def main():
     from dataset.read_dataset import get_dataset_dataframe
     df = get_dataset_dataframe()
+    
     X, Y = extract_training_data_from_dataframe(df)
+    
     from sklearn.svm import SVC
     X_train, X_test, y_train, y_test = \
         train_test_split(X, Y, test_size=.2, random_state=42)
 
     print(df.head())
     print('X: ', (X.shape), 'Y : ', np.array(Y.shape))
+
+    
     model = SVC(kernel='linear')
     model.fit(X_train, y_train)
     score = model.score(X_test, y_test)

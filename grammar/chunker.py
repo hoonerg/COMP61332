@@ -26,6 +26,7 @@ class Chunker:
             if depth_limit <= 0:
                 return collector_list
             for subtree in tree:
+                # Checking if its a Tree, used mainly to here to check if leaf is reached
                 if isinstance(subtree, nltk.Tree):
                     recursively_get_pos_only(subtree, collector_list, depth_limit - 1)
                 else:
@@ -37,6 +38,7 @@ class Chunker:
             chunk_dict[subtrees.label()].append(pos_tagged)
 
         chunk_dict = nltk.defaultdict(list)
+        #  subtree, represents a chunk identified by the grammar.
         for subtrees in chunked_tree:
             if isinstance(subtrees, nltk.Tree):
                 get_pos_tagged_and_append_to_chunk_dict(chunk_dict, subtrees)

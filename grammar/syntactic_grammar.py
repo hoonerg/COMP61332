@@ -27,4 +27,5 @@ class PatternGrammar:
         return compiled_grammar
 
     def compile_syntactic_grammar(self, index):
+        # Creates an Parser object with corresponding Grammar
         return nltk.RegexpParser(self.syntactic_grammars[index])

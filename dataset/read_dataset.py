@@ -18,6 +18,7 @@ training_dataset_dataframe = None
 
 
 def get_entity_dict(sentence_dom):
+    # Returns list of all the entities, with its id and text as key-value pair
     entities = sentence_dom.getElementsByTagName('entity')
     entity_dict = {}
     for entity in entities:
@@ -28,6 +29,15 @@ def get_entity_dict(sentence_dom):
 
 
 def normalize_sentence(row):
+    # Refer to the research paper
+    # Adds suffix and prefix to all the tokens w.r.t its position to the enitity
+    # bf - before entity
+    # be - between 2 entities
+    # af - after entity 2nd entity
+    # NOT removing any of the stop words over here
+    
+    # BELOW ESEPRATES OUT THE . and . from the words by adding space around it
+    # that is, e. => e .
     sentence = row.sentence_text.replace('.', ' . ')
     sentence = sentence.replace(',', ' , ')
     e1 = row.e1
@@ -55,6 +65,7 @@ def normalize_sentence(row):
 
 
 def get_dataset_dataframe(directory=None):
+    # Issue: is multiple CSV file creation.
     global training_dataset_dataframe, dataset_csv_file
 
     if training_dataset_dataframe:
@@ -73,6 +84,7 @@ def get_dataset_dataframe(directory=None):
         return df
 
     lol = []
+    #glob.glob creates a list of all the paths to the different xml files in the directory
     total_files_to_read = glob.glob(directory + '*.xml')
     print('total_files_to_read:' , len(total_files_to_read) , ' from dir: ' , directory)
     for file in tqdm(total_files_to_read):
@@ -90,6 +102,11 @@ def get_dataset_dataframe(directory=None):
                     # print(pair.attributes().items())
                     if not os.path.isfile('types'):
                         types.add(pair.getAttribute('type'))
+                    # Only considers all the pairs that has
+                    # TRUE relations with the two corresponding entities
+                    
+                    # All TRUE relations between different entities in a
+                    # sentence
                     if ddi_flag == 'true':
                         e1 = pair.getAttribute('e1')
                         e2 = pair.getAttribute('e2')
@@ -98,6 +115,7 @@ def get_dataset_dataframe(directory=None):
         except ExpatError:
             pass
 
+    # Pickle file is used to store the python objects
     pd.to_pickle(types, 'types')
     df = pd.DataFrame(lol, columns='sentence_text,e1,e2,relation_type'.split(','))
     df['normalized_sentence'] = df.apply(normalize_sentence, axis=1)
@@ -110,8 +128,11 @@ def get_training_label(row):
     global types
 
     types = pd.read_pickle('types')
+   # TYPES:-  ['effect', 'advise', 'int', 'mechanism']
     types = [t for t in types if t]
+    # ^ To remove all falsy values like None, 0 etc.
     type_list = list(types)
+    
     relation_type = row.relation_type
     X = [i for i, t in enumerate(type_list) if relation_type == t]
     # s = np.sum(X)
