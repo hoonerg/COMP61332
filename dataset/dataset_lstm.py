@@ -34,58 +34,52 @@ class RelationDataset(Dataset):
         return len(self.texts)
 
     def __getitem__(self, item):
-        print("TEXT", self.texts[item])
         vectorized_text = [self.vocab.get_vector(word) for word in self.texts[item].split()]
         vectorized_text = np.stack(vectorized_text)
-        # print("VECTORIZED TEXT AND SHAPE:", vectorized_text, vectorized_text.shape)
-        # print("VECTORIZED flattened:", vectorized_text.flatten())
         return torch.tensor(vectorized_text, dtype=torch.float), torch.tensor(self.labels[item], dtype=torch.long)
 
-# X_train - texts
-# y_train - labels
-# df - dataset
-# def vectorize_words(sentence):
-#     tokens = sentence.split()
-#     print("TEXT 2", sentence)
-#     vectorized_text = [vocab.get_vector(word) for word in tokens]
-#     vectorized_text = np.stack(vectorized_text)
-#     print("VECTORIZED TEXT 2:", vectorized_text)
-#     return vectorized_text.flatten()
 
-def vectorize_words(sentence, max_length=30):
-    """
-    Vectorize a sentence, padding or truncating to ensure a fixed-size output.
+def find_max_word_length(sentences):
+    max_lengths = []
+    for sentence in sentences:
+        # Splitting the sentence into words and finding the length of each word
+        word_lengths = [len(word) for word in sentence.split()]
+        # Finding the maximum length in the current sentence
+        max_length = max(word_lengths)
+        max_lengths.append(max_length)
+    return max(max_lengths)
+
+def vectorize_sentence(sentences, max_length= 30):
+    vector_lists = []
     
-    :param sentence: The sentence to vectorize.
-    :param vocab: A vocabulary with a get_vector(word) method to obtain vectors.
-    :param max_length: The fixed number of words to encode per sentence.
-    :return: A flattened array representing the vectorized, padded/truncated sentence.
-    """
-    # Split the sentence into tokens
+    for sentence in sentences:
+        vector = vectorize_words(sentence, max_length)
+        vector_lists.append(vector)
+    
+    # Conversion to a 2-D numpy array of size (number of sentences, no: of features) 
+    return np.array(vector_lists)
+        
+def vectorize_words(sentence, max_length=30):
     tokens = sentence.split()
     vector_size = None
-    # Initialize a list to hold the vectorized words
+    # vectorized_text consists of the feature vector representation of each word, 
+    # after truncation and padding the sentence to max_length
     vectorized_text = []
     
     # Process each word in the sentence
     for word in tokens:
         try:
-            # Attempt to get the vector for the word
             vector = vocab.get_vector(word)
             if vector_size is None:
                 vector_size = len(vector)
             vectorized_text.append(vector)
         except KeyError:
-            # If the word is not in the vocabulary, you can choose to skip it
-            # or append a zero vector; for now, let's skip it
             continue
         
         # If we've reached the desired length, stop processing
         if len(vectorized_text) == max_length:
             break
-    
-    # print("TESTING:- ", vectorized_text)       
-    
+ 
     # Pad with zero vectors if needed
     while len(vectorized_text) < max_length:
         vectorized_text.append(np.zeros(vector_size))
@@ -93,6 +87,13 @@ def vectorize_words(sentence, max_length=30):
     # Flatten the list of vectors into a single vector
     return np.array(vectorized_text).flatten()
 
+def get_test_dataset(dataset):
+    X = dataset['normalized_sentence'].values
+    label_encoder = LabelEncoder()
+    y = label_encoder.fit_transform(dataset['relation_type'].values)
+    
+    return X, y
+    
 def collate_fn(batch):
     texts, labels = zip(*batch)
     

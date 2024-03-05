@@ -1,6 +1,6 @@
 from sklearn.metrics import classification_report
 import torch
-from dataset.dataset_lstm import load_test_data
+from dataset.dataset_lstm import get_test_dataset, load_test_data, vectorize_sentence
 from train import extract_training_data_from_dataframe, trained_model_pickle_file
 import pandas as pd
 import os
@@ -21,9 +21,12 @@ def predict(model_type=None):
 
     if model_type == "SVM":
         print("Infering SVM model...")
-
-        X, Y = extract_training_data_from_dataframe(df)
+    
+        X_test,Y = get_test_dataset(df)
+        X = vectorize_sentence(X_test, 40)
+        
         model = pd.read_pickle(trained_model_pickle_file)
+        
         y_pred  = model.predict(X)
 
         print(classification_report(Y, y_pred))
