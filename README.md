@@ -19,6 +19,13 @@ The inference code use only LSTM model which is a final version.
 ```sh
 python infer.py
 ```
+This will show you user input form three times.
+Type sentence, the first entity, and the second entity.
+```sh
+Enter the sentence: Sentence here without quotation marks.
+Enter the first entity: First entity here. Can be a word or group of words
+Enter the second entity: Second entity here. Can be a word or group of words
+```
 
 ## How to train the models
 
