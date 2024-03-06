@@ -14,8 +14,6 @@ from sklearn.metrics import f1_score, accuracy_score
 def predict(model_type=None, user_input=None):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-    new_path = os.path.join(os.getcwd(), "dataset/DDICorpus/Test/test_for_ddi_extraction_task/DrugBank/")
-    # df = get_dataset_dataframe(directory=os.path.expanduser('~/ddi/dataset/DDICorpus/Test/test_for_ddi_extraction_task/DrugBank/'))
     dataset_path = 'dataset/test_dataset_dataframe.csv'
     df = pd.read_csv(dataset_path)
     

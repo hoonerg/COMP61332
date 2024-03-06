@@ -40,7 +40,7 @@ class RelationDataset(Dataset):
   
 class UserInputDataset(Dataset):
     def __init__(self, texts, vocab):
-        self.texts = [texts]  # 단일 입력을 리스트로 변환
+        self.texts = [texts]
         self.vocab = vocab
 
     def __len__(self):
