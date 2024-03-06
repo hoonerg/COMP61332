@@ -20,15 +20,18 @@ The inference code use only LSTM model which is a final version.
 python infer.py
 ```
 
+## How to train the models
+
+### Data preprocessing
+This will generate preprocessed csv files from raw data.
+```sh
+python processing.py
+```
+
 ### Training
-There are two models
+There are two models available for training and test. 
+The code below will run training and test for each model.
 ```sh
 python main.py SVM
 python main.py LSTM
-```
-
-### Data preprocessing
-There are two models
-```sh
-python processing_suffix_x.py
 ```

@@ -1,146 +1,102 @@
-# -*- coding: utf-8 -*-
 import glob
-import os
-from pyexpat import ExpatError
 from xml.dom import minidom
-
 import pandas as pd
 from nltk.corpus import stopwords
 from tqdm import tqdm
 
-STOP_WORDS = set(stopwords.words('english')) | set('the')
+def get_entity_by_id(entities, entity_id):
+    """
+    Retrieve a specific entity by its ID from the list of entities.
+    """
+    for entity in entities:
+        if entity['id'] == entity_id:
+            return entity
+    return None
 
-# pd.set_option('display.width', 1000)
-dataset_csv_file = 'dataset_dataframe.csv'
-types = set()
+def normalize_sentence_by_char_offset(sentence_text, entity_e1, entity_e2, stop_words):
+    # Remove commas and hyphens from the sentence text
+    sentence_text = sentence_text.replace(',', ' ').replace('-', ' ')
 
-training_dataset_dataframe = None
+    entities_to_replace = [entity_e1, entity_e2]
+    # Sort entities by start position to handle them in correct order
+    entities_to_replace.sort(key=lambda x: x['start'])
 
+    offset_diff = 0
+    for i, entity in enumerate(entities_to_replace):
+        replacement_text = ' DRUG ' if i == 0 else ' OTHER_DRUG '
+        start = entity['start'] + offset_diff
+        end = entity['end'] + offset_diff + 1
+        # Ensure spacing around replacements if not at the beginning or end of the sentence
+        if start > 0 and sentence_text[start-1].isalnum():
+            replacement_text = ' ' + replacement_text
+        if end < len(sentence_text) and sentence_text[end].isalnum():
+            replacement_text = replacement_text + ' '
+        sentence_text = sentence_text[:start] + replacement_text + sentence_text[end:]
+        # Adjust offset_diff based on the length difference between the original and replacement texts
+        offset_diff += len(replacement_text) - (end - start)
 
-def get_entity_dict(sentence_dom):
+    # Remove stopwords after replacements
+    words = sentence_text.split()
+    filtered_sentence = ' '.join(word for word in words if word.lower() not in stop_words).strip()
+    
+    return filtered_sentence
+
+def get_entities_with_char_offset(sentence_dom):
     entities = sentence_dom.getElementsByTagName('entity')
-    entity_dict = {}
+    entity_list = []
     for entity in entities:
         id = entity.getAttribute('id')
         word = entity.getAttribute('text')
-        entity_dict[id] = word
-    return entity_dict
+        char_offsets = entity.getAttribute('charOffset').split(';')
+        for char_range in char_offsets:
+            start, end = map(int, char_range.split('-'))
+            entity_list.append({'id': id, 'text': word, 'start': start, 'end': end, 'charOffset': char_range})
+    return entity_list
 
+def get_dataset_dataframe(directory, dataset_csv_file, types):
+    stop_words = set(stopwords.words('english')) | set(['the'])
 
-def normalize_sentence(row):
-    sentence = row.sentence_text.replace('.', ' . ')
-    sentence = sentence.replace(',', ' , ')
-    e1 = row.e1
-    e2 = row.e2
-    new_sentence_tokenized = []
-    i = 0
-    for word in sentence.split():
-        if word in STOP_WORDS:
-            continue
-        if word.lower() == e1.lower():
-            new_sentence_tokenized.append('DRUG')
-            i += 1
-        elif word.lower() == e2.lower():
-            new_sentence_tokenized.append('OTHER_DRUG')
-            i += 1
-        elif i == 0:
-            new_sentence_tokenized.append(word + '_bf')
-        elif i == 1:
-            new_sentence_tokenized.append(word + '_be')
-        else:
-            new_sentence_tokenized.append(word + '_af')
-    normalized_sentence = ' '.join(new_sentence_tokenized).strip()
-    # print(e1, e2, ' :  sentence :', sentence, 'new_sentence', normalized_sentence, '\n\n')
-    return normalized_sentence
-
-def normalize_sentence_without_suffix(row):
-    #sentence = row.sentence_text.replace('.', ' . ')
-    sentence = sentence.replace(',', '')
-    e1 = row.e1
-    e2 = row.e2
-    new_sentence_tokenized = []
-    i = 0
-    for word in sentence.split():
-        if word in STOP_WORDS:
-            continue
-        if word.lower() == e1.lower():
-            new_sentence_tokenized.append('DRUG')
-            i += 1
-        elif word.lower() == e2.lower():
-            new_sentence_tokenized.append('OTHER_DRUG')
-            i += 1
-        elif i == 0:
-            new_sentence_tokenized.append(word)
-        elif i == 1:
-            new_sentence_tokenized.append(word)
-        else:
-            new_sentence_tokenized.append(word)
-    normalized_sentence_without_suffix = ' '.join(new_sentence_tokenized).strip()
-    return normalized_sentence_without_suffix
-
-
-def get_dataset_dataframe(directory=None):
-    global training_dataset_dataframe, dataset_csv_file
-
-    if training_dataset_dataframe:
-        return training_dataset_dataframe
-    global types
-
-    if directory is None:
-        directory = os.path.expanduser('dataset/DDICorpus/Train/DrugBank/')
-
-    dataset_csv_file_prefix = str(directory.split('/')[-3]).lower() + '_'
-
-    dataset_csv_file = dataset_csv_file_prefix + dataset_csv_file
-    if os.path.isfile(dataset_csv_file):
-        df = pd.read_csv(dataset_csv_file)
-        return df
-
-    lol = []
+    data_records = []
     total_files_to_read = glob.glob(directory + '*.xml')
-    print('total_files_to_read:' , len(total_files_to_read) , ' from dir: ' , directory)
+    print('total_files_to_read:', len(total_files_to_read), 'from dir:', directory)
     for file in tqdm(total_files_to_read):
         try:
             DOMTree = minidom.parse(file)
             sentences = DOMTree.getElementsByTagName('sentence')
 
             for sentence_dom in sentences:
-                entity_dict = get_entity_dict(sentence_dom)
-
+                entities = get_entities_with_char_offset(sentence_dom)
+                entity_dict = {e['id']: e for e in entities}
                 pairs = sentence_dom.getElementsByTagName('pair')
                 sentence_text = sentence_dom.getAttribute('text')
                 for pair in pairs:
                     ddi_flag = pair.getAttribute('ddi')
-                    # print(pair.attributes().items())
-                    if not os.path.isfile('types'):
-                        types.add(pair.getAttribute('type'))
                     if ddi_flag == 'true':
-                        e1 = pair.getAttribute('e1')
-                        e2 = pair.getAttribute('e2')
+                        e1_id = pair.getAttribute('e1')
+                        e2_id = pair.getAttribute('e2')
+                        e1_entity = entity_dict.get(e1_id)
+                        e2_entity = entity_dict.get(e2_id)
                         relation_type = pair.getAttribute('type')
-                        lol.append([sentence_text, entity_dict[e1], entity_dict[e2], relation_type])
-        except ExpatError:
-            pass
+                        types.add(relation_type)
+                        normalized_sentence = normalize_sentence_by_char_offset(sentence_text, e1_entity, e2_entity, stop_words)
+                        data_records.append([sentence_text, e1_entity['text'], e2_entity['text'], relation_type, normalized_sentence])
+        except Exception as e:
+            pass#print(f"Error processing file {file}: {e}")
 
-    pd.to_pickle(types, 'types')
-    df = pd.DataFrame(lol, columns='sentence_text,e1,e2,relation_type'.split(','))
-    df['normalized_sentence'] = df.apply(normalize_sentence, axis=1)
-    #df['normalized_sentence_without_suffix'] = df.apply(normalize_sentence_without_suffix, axis=1)
+    df = pd.DataFrame(data_records, columns='sentence_text,e1_text,e2_text,relation_type,normalized_sentence'.split(','))
     df.to_csv(dataset_csv_file)
-    df = pd.read_csv(dataset_csv_file)
-    return df
+    return df, types
 
+if __name__ == "__main__":
+    types = set()
+    directory_1 = "dataset/DDICorpus/Train/merged_version/"
+    dataset_csv_file = 'train_dataset_dataframe.csv'
+    df1, types = get_dataset_dataframe(directory_1, dataset_csv_file, types)
+    
+    directory_2 = "dataset/DDICorpus/Test/test_for_ddi_extraction_task/merged_version/"
+    dataset_csv_file = 'test_dataset_dataframe.csv'
+    df2, types = get_dataset_dataframe(directory_2, dataset_csv_file, types)
 
-def get_training_label(row):
-    global types
-
-    types = pd.read_pickle('types')
-    types = [t for t in types if t]
-    type_list = list(types)
-    relation_type = row.relation_type
-    X = [i for i, t in enumerate(type_list) if relation_type == t]
-    # s = np.sum(X)
-    if X:
-        return X[0]
-    else:
-        return 1
+    pd.to_pickle(types, 'types.pkl')
+    print(df1.shape)
+    print(df2.shape)
