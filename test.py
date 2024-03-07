@@ -34,18 +34,15 @@ def predict(model_type=None, user_input=None, normalized_sentence= None):
         if user_input:
             print("User Input :", user_input)
             X = get_X_for_inference(normalized_sentence, vocab)
-            print("X is ", X)
             y_pred  = model.predict(X)
             
             predicted_label = label_encoder.inverse_transform(y_pred)[0]
             
-            print("Predicted Y:- ", y_pred, predicted_label)            
+            print("Predicted Label is:- ", predicted_label)            
         else:
             X,Y = get_test_dataset(df, label_encoder, vocab)   
             y_pred  = model.predict(X)
             
-            
-
             print(classification_report(Y, y_pred))
 
     elif model_type == "LSTM":
