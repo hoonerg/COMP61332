@@ -1,5 +1,5 @@
 from sklearn.metrics import classification_report
-from dataset.dataset_svm import get_X_for_inference, vectorize_sentence, get_test_dataset
+from dataset.dataset_svm import vectorize_sentence, get_test_dataset
 import torch
 from dataset.dataset_lstm import load_test_data, UserInputDataset
                             
@@ -32,7 +32,7 @@ def predict(model_type=None, user_input=None, normalized_sentence= None):
             label_encoder = pickle.load(f)
         
         if user_input:
-            X = get_X_for_inference(normalized_sentence, vocab)
+            X = vectorize_sentence([normalized_sentence], vocab, 40)
             y_pred  = model.predict(X)
             
             predicted_label = label_encoder.inverse_transform(y_pred)[0]

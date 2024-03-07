@@ -65,8 +65,4 @@ def get_test_dataset(dataset, label_encoder, vocab):
  
     return X, y
 
-def get_X_for_inference(normalized_sentence, vocab):
-    X = vectorize_sentence([normalized_sentence], vocab, 40)
-
-    return X
   
