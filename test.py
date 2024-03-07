@@ -1,5 +1,5 @@
 from sklearn.metrics import classification_report
-from dataset.dataset_svm import vectorize_sentence, get_test_dataset
+from dataset.dataset_svm import get_X_for_inference, vectorize_sentence, get_test_dataset
 import torch
 from dataset.dataset_lstm import load_test_data, UserInputDataset
                             
@@ -11,7 +11,7 @@ import pickle
 from config.model import LSTMRelationClassifier
 from sklearn.metrics import f1_score, accuracy_score
 
-def predict(model_type=None, user_input=None):
+def predict(model_type=None, user_input=None, normalized_sentence= None):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     dataset_path = 'dataset/test_dataset_dataframe.csv'
@@ -22,15 +22,31 @@ def predict(model_type=None, user_input=None):
 
     if model_type == "SVM":
         print("Infering SVM model...")
-    
-        X_test,Y = get_test_dataset(df)
-        X = vectorize_sentence(X_test, 40)
         
         model = pd.read_pickle(trained_model_pickle_file)
         
-        y_pred  = model.predict(X)
+        #Load both vocab and label_encoder
+        with open('vocab.pkl', 'rb') as f:
+            vocab = pickle.load(f)
+        with open('label_encoder.pkl', 'rb') as f:
+            label_encoder = pickle.load(f)
+        
+        if user_input:
+            print("User Input :", user_input)
+            X = get_X_for_inference(normalized_sentence, vocab)
+            print("X is ", X)
+            y_pred  = model.predict(X)
+            
+            predicted_label = label_encoder.inverse_transform(y_pred)[0]
+            
+            print("Predicted Y:- ", y_pred, predicted_label)            
+        else:
+            X,Y = get_test_dataset(df, label_encoder, vocab)   
+            y_pred  = model.predict(X)
+            
+            
 
-        print(classification_report(Y, y_pred))
+            print(classification_report(Y, y_pred))
 
     elif model_type == "LSTM":
         print("Infering LSTM model...")

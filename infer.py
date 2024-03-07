@@ -27,6 +27,7 @@ def get_user_input():
     Get user input for sentence and entities, and normalize the input.
     """
     sentence = input("Enter the sentence: ")
+    model_type = input("Enter Model Type (SVM/LSTM):")
     first_entity = input("Enter the first entity: ")
     second_entity = input("Enter the second entity: ")
 
@@ -35,10 +36,14 @@ def get_user_input():
     normalized_sentence = normalize_sentence_by_char_offset(sentence, first_entity, second_entity, stop_words)
 
     formatted_input = f'"{sentence}", "{first_entity}", "{second_entity}", "{normalized_sentence}"'
-    return formatted_input, normalized_sentence
+    return formatted_input, normalized_sentence, model_type
 
 if __name__ == "__main__":
-    user_input, normalized_sentence = get_user_input()
+    user_input, normalized_sentence, model_type = get_user_input()
     
-    print("\nPredicting with LSTM model...")
-    predict("LSTM", user_input)
+    print("\nPredicting with ",model_type," model...")
+    if model_type == "SVM":
+        predict("SVM", user_input, normalized_sentence)
+    elif model_type == "LSTM":
+        predict("LSTM", user_input)
+        

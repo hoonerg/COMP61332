@@ -40,8 +40,9 @@ def main(model_type=None):
         X_train_sentences, X_test_sentences, y_train, y_test, label_encoder = create_dataset(df)
         max_word_length = find_max_word_length(X_train_sentences)
         # Embedding the sentences       
-        X_train = vectorize_sentence(X_train_sentences, max_word_length)
-        X_test = vectorize_sentence(X_test_sentences ,max_word_length)
+        X_train = vectorize_sentence(X_train_sentences, vocab, max_word_length)
+        X_test = vectorize_sentence(X_test_sentences , vocab, max_word_length)
+        
 
         model = SVC(kernel='linear')
         model.fit(X_train, y_train)
@@ -51,6 +52,13 @@ def main(model_type=None):
         print('Score : ', score)
         y_pred = model.predict(X_test)
         print(classification_report(y_test, y_pred))
+        
+        # Save vocab and label encoder
+        with open('vocab.pkl', 'wb') as f:
+            pickle.dump(vocab, f)
+
+        with open('label_encoder.pkl', 'wb') as f:
+            pickle.dump(label_encoder, f)
 
     elif model_type == "LSTM":
         print("Training LSTM model...")

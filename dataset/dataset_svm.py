@@ -18,17 +18,17 @@ def find_max_word_length(sentences):
         max_lengths.append(max_length)
     return max(max_lengths)
 
-def vectorize_sentence(sentences, max_length= 30):
+def vectorize_sentence(sentences, vocab, max_length= 30):
     vector_lists = []
     
     for sentence in sentences:
-        vector = vectorize_words(sentence, max_length)
+        vector = vectorize_words(sentence, vocab, max_length)
         vector_lists.append(vector)
     
     # Conversion to a 2-D numpy array of size (number of sentences, no: of features) 
     return np.array(vector_lists)
         
-def vectorize_words(sentence, max_length=30):
+def vectorize_words(sentence, vocab, max_length=30):
     tokens = sentence.split()
     vector_size = None
     # vectorized_text consists of the feature vector representation of each word, 
@@ -56,10 +56,18 @@ def vectorize_words(sentence, max_length=30):
     # Flatten the list of vectors into a single vector
     return np.array(vectorized_text).flatten()
 
-def get_test_dataset(dataset):
-    X = dataset['normalized_sentence'].values
-    label_encoder = LabelEncoder()
+def get_test_dataset(dataset, label_encoder, vocab):
+    # Returns embedded form for both X and y
+    X_test = dataset['normalized_sentence'].values
+
+    X = vectorize_sentence(X_test, vocab, 40)
     y = label_encoder.fit_transform(dataset['relation_type'].values)
-    
+ 
     return X, y
+
+def get_X_for_inference(normalized_sentence, vocab):
+    print("Sentence: ", normalized_sentence)
+    X = vectorize_sentence([normalized_sentence], vocab, 40)
+    print("X shape: ", X.shape)
+    return X
   
