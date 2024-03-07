@@ -23,7 +23,7 @@ def normalize_sentence_by_char_offset(sentence_text, entity_e1, entity_e2, stop_
 
     offset_diff = 0
     for i, entity in enumerate(entities_to_replace):
-        replacement_text = ' DRUG ' if i == 0 else ' OTHER_DRUG '
+        replacement_text = entity+'_first' if i == 0 else entity+'_second'
         start = entity['start'] + offset_diff
         end = entity['end'] + offset_diff + 1
         # Ensure spacing around replacements if not at the beginning or end of the sentence

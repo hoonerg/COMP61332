@@ -70,7 +70,7 @@ def generate_loader(dataset, texts, labels, vocab, batch_size=32, shuffle=True):
 
 def create_dataset(dataset):
     # Tokenization and Encoding
-    texts = dataset['normalized_sentence'].values
+    texts = dataset['sentence_text'].values
     label_encoder = LabelEncoder()
     labels = label_encoder.fit_transform(dataset['relation_type'].values)
 
