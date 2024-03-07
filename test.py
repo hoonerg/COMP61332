@@ -32,7 +32,6 @@ def predict(model_type=None, user_input=None, normalized_sentence= None):
             label_encoder = pickle.load(f)
         
         if user_input:
-            print("User Input :", user_input)
             X = get_X_for_inference(normalized_sentence, vocab)
             y_pred  = model.predict(X)
             
