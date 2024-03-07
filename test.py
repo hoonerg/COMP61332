@@ -43,6 +43,15 @@ def predict(model_type=None, user_input=None, normalized_sentence= None):
             y_pred  = model.predict(X)
             
             print(classification_report(Y, y_pred))
+            
+            overall_f1_score = f1_score(Y, y_pred, average='micro') * 100
+
+            # Calculate F1 scores for each class without averaging
+            f1_scores_by_class = f1_score(Y, y_pred, average=None)
+
+            # Print overall F1 score
+            print(f'Overall F1 Score on test data: {overall_f1_score:.2f}%')
+            print(f'F1 Scores by class: {f1_scores_by_class}%')
 
     elif model_type == "LSTM":
         print("Infering LSTM model...")

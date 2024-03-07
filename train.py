@@ -3,7 +3,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from itertools import combinations
-
+from sklearn.metrics import f1_score
 from nltk import ngrams
 # from sklearn.cross_validation import train_test_split
 # In the new version, the train test split function 
@@ -21,7 +21,7 @@ import pickle
 import numpy as np
 
 
-trained_model_pickle_file = 'trained_model.pkl'
+trained_model_pickle_file = 'results/checkpoints/trained_model.pkl'
 
 def main(model_type=None):
     import pandas as pd
@@ -43,7 +43,6 @@ def main(model_type=None):
         X_train = vectorize_sentence(X_train_sentences, vocab, max_word_length)
         X_test = vectorize_sentence(X_test_sentences , vocab, max_word_length)
         
-
         model = SVC(kernel='linear')
         model.fit(X_train, y_train)
         score = model.score(X_test, y_test)
@@ -52,6 +51,7 @@ def main(model_type=None):
         print('Score : ', score)
         y_pred = model.predict(X_test)
         print(classification_report(y_test, y_pred))
+        
         
         # Save vocab and label encoder
         with open('vocab.pkl', 'wb') as f:
