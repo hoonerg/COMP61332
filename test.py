@@ -105,6 +105,8 @@ def predict(model_type=None, user_input=None, normalized_sentence= None):
                     all_predictions.extend(predicted.cpu().numpy())
                     all_labels.extend(labels.cpu().numpy())
 
+            print(classification_report(all_labels, all_predictions))
+            
             overall_f1_score = f1_score(all_labels, all_predictions, average='micro') * 100
 
             # Calculate F1 scores for each class without averaging
@@ -112,6 +114,12 @@ def predict(model_type=None, user_input=None, normalized_sentence= None):
 
             # Print overall F1 score
             print(f'Overall F1 Score on test data: {overall_f1_score:.2f}%')
+            print(f'F1 Scores by class: {f1_scores_by_class}%')
+            
+            precision = precision_score(all_labels, all_predictions, average='micro')* 100
+            recall = recall_score(all_labels, all_predictions, average='micro') * 100  
+            print("PRECISION: ", precision)
+            print("RECALL: ", recall)
 
             # Print F1 score for each class
             for i, score in enumerate(f1_scores_by_class):
