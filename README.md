@@ -10,6 +10,8 @@ pip install -r requirements.txt
 
 ### Dependencies
 You need to download googlenews-vectors-negative300.bin.gz (1.5GB) for word2vec in the working directory
+The trained model for SVM (142MB) is added as a google drive link as well. By running the 
+following command, the trained model will be downloaded to results/checkpoint/svm_best_model.pkl
 ```sh
 python setup.py
 ```
