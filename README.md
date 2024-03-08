@@ -12,9 +12,7 @@ pip install -r requirements.txt
 ```
 
 ### Dependencies
-This code will download large files in the working directory.
-The first file is googlenews-vectors-negative300.bin.gz (1.5GB) for using word2vec.
-The second file is pretrained SVM model for inference.
+This code will download large files in the working directory (4.5GB) for using word2vec and pretrained model.
 ```sh
 python setup.py
 ```
