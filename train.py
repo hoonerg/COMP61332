@@ -21,7 +21,7 @@ import pickle
 import numpy as np
 
 
-trained_model_pickle_file = 'results/checkpoints/trained_model.pkl'
+trained_model_pickle_file = 'results/checkpoints/svm_best_model.pkl'
 
 def main(model_type=None):
     import pandas as pd
@@ -47,6 +47,7 @@ def main(model_type=None):
         model.fit(X_train, y_train)
         score = model.score(X_test, y_test)
 
+        # Saving model to a pickle file
         pd.to_pickle(model, trained_model_pickle_file)
         print('Score : ', score)
         y_pred = model.predict(X_test)

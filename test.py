@@ -9,7 +9,7 @@ import pandas as pd
 import os
 import pickle
 from config.model import LSTMRelationClassifier
-from sklearn.metrics import f1_score, accuracy_score
+from sklearn.metrics import f1_score, precision_score, recall_score
 
 def predict(model_type=None, user_input=None, normalized_sentence= None):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -52,6 +52,11 @@ def predict(model_type=None, user_input=None, normalized_sentence= None):
             # Print overall F1 score
             print(f'Overall F1 Score on test data: {overall_f1_score:.2f}%')
             print(f'F1 Scores by class: {f1_scores_by_class}%')
+            
+            precision = precision_score(Y, y_pred, average='micro')* 100
+            recall = recall_score(Y, y_pred, average='micro') * 100  
+            print("PRECISION: ", precision)
+            print("RECALL: ", recall)
 
     elif model_type == "LSTM":
         print("Infering LSTM model...")
