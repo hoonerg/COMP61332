@@ -12,20 +12,20 @@ pip install -r requirements.txt
 ```
 
 ### Dependencies
-You need to download googlenews-vectors-negative300.bin.gz (1.5GB) for word2vec in the working directory
-The trained model for SVM (142MB) is added as a google drive link as well. By running the 
-following command, the trained model will be downloaded to results/checkpoint/svm_best_model.pkl
+This code will download large files in the working directory.
+The first file is googlenews-vectors-negative300.bin.gz (1.5GB) for using word2vec.
+The second file is pretrained SVM model for inference.
 ```sh
 python setup.py
 ```
 
 ### Inference
-The inference code utilizes both LSTM and SVM model, depending on the model type provided.
+This is for inference where user can type sentence and get class prediction with pretrained model.
 ```sh
 python infer.py
 ```
-This will show you user input form three times.
-Type sentence, model type (SVM/LSTM), the first entity, and the second entity.
+This will show you user input form four times.
+Type sentence, model type (SVM or LSTM), the first entity, and the second entity.
 ```sh
 Enter the sentence: Sentence here without quotation marks.
 Enter Model Type (SVM/LSTM): Either SVM or LSTM.
@@ -36,13 +36,13 @@ Enter the second entity: Second entity here. Can be a word or group of words
 ## How to train the models
 
 ### Data preprocessing
-This will generate preprocessed csv files from raw data.
+This will generate preprocessed csv files from raw data files (XML).
 ```sh
 python processing.py
 ```
 
 ### Training
-There are two models available for training and test. 
+This is for training and testing model.
 The code below will run training and test for each model.
 ```sh
 python main.py SVM
