@@ -53,8 +53,8 @@ def predict(model_type=None, user_input=None, normalized_sentence= None):
             print(f'Overall F1 Score on test data: {overall_f1_score:.2f}%')
             print(f'F1 Scores by class: {f1_scores_by_class}%')
             
-            precision = precision_score(Y, y_pred, average='micro')* 100
-            recall = recall_score(Y, y_pred, average='micro') * 100  
+            precision = precision_score(Y, y_pred, average='macro')* 100
+            recall = recall_score(Y, y_pred, average='macro') * 100  
             print("PRECISION: ", precision)
             print("RECALL: ", recall)
 
