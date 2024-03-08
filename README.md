@@ -15,14 +15,15 @@ python setup.py
 ```
 
 ### Inference
-The inference code use only LSTM model which is a final version.
+The inference code utilizes both LSTM and SVM model, depending on the model type provided which is a final version.
 ```sh
 python infer.py
 ```
 This will show you user input form three times.
-Type sentence, the first entity, and the second entity.
+Type sentence, model type (SVM/LSTM) the first entity, and the second entity.
 ```sh
 Enter the sentence: Sentence here without quotation marks.
+Enter Model Type (SVM/LSTM): Either SVM or LSTM.
 Enter the first entity: First entity here. Can be a word or group of words
 Enter the second entity: Second entity here. Can be a word or group of words
 ```
