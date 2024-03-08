@@ -23,17 +23,28 @@ def normalize_sentence_by_char_offset(sentence_text, entity_e1, entity_e2, stop_
 
     offset_diff = 0
     for i, entity in enumerate(entities_to_replace):
-        replacement_text = entity+'_first' if i == 0 else entity+'_second'
+        # Determine the suffix based on the entity's order
+        suffix = '_first ' if i == 0 else '_second '
+        # The replacement text now appends the suffix to the entity text
+        replacement_text = entity['text'] + suffix
+        
+        # Calculate the start and end positions of the entity within the current version of the sentence
         start = entity['start'] + offset_diff
+        # The end position should not be incremented by 1 here, since we're replacing the entire entity text
         end = entity['end'] + offset_diff + 1
+        
         # Ensure spacing around replacements if not at the beginning or end of the sentence
         if start > 0 and sentence_text[start-1].isalnum():
             replacement_text = ' ' + replacement_text
         if end < len(sentence_text) and sentence_text[end].isalnum():
             replacement_text = replacement_text + ' '
+        
+        # Replace the entity text with the modified replacement_text in the sentence
         sentence_text = sentence_text[:start] + replacement_text + sentence_text[end:]
-        # Adjust offset_diff based on the length difference between the original and replacement texts
+        
+        # Adjust offset_diff based on the length difference between the original entity text and the replacement text
         offset_diff += len(replacement_text) - (end - start)
+
 
     # Remove stopwords after replacements
     words = sentence_text.split()
@@ -90,11 +101,11 @@ def get_dataset_dataframe(directory, dataset_csv_file, types):
 if __name__ == "__main__":
     types = set()
     directory_1 = "dataset/DDICorpus/Train/merged_version/"
-    dataset_csv_file = 'train_dataset_dataframe.csv'
+    dataset_csv_file = 'dataset/train_dataset_dataframe.csv'
     df1, types = get_dataset_dataframe(directory_1, dataset_csv_file, types)
     
     directory_2 = "dataset/DDICorpus/Test/test_for_ddi_extraction_task/merged_version/"
-    dataset_csv_file = 'test_dataset_dataframe.csv'
+    dataset_csv_file = 'dataset/test_dataset_dataframe.csv'
     df2, types = get_dataset_dataframe(directory_2, dataset_csv_file, types)
 
     pd.to_pickle(types, 'types.pkl')
