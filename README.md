@@ -1,4 +1,4 @@
-## Link to the code's github Repository:
+## Link to github Repository:
 https://github.com/hoonerg/COMP61332
 
 ## How to run the code
