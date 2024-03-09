@@ -39,7 +39,7 @@ This will generate preprocessed csv files from raw data files (XML).
 python processing.py
 ```
 
-### Training / Inference
+### Train / Test
 This is for training and testing model.
 The code below will run training and test for each model. [model] should be SVM or LSTM.
 ```sh
