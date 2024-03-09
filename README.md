@@ -17,10 +17,10 @@ This code will download large files in the working directory (4.5GB) for using w
 python setup.py
 ```
 
-### Inference
+### User Inference
 This is for inference where user can type sentence and get class prediction with pretrained model.
 ```sh
-python infer.py
+python user_infer.py
 ```
 This will show you user input form four times.
 Type sentence, model type (SVM or LSTM), the first entity, and the second entity.
@@ -39,7 +39,7 @@ This will generate preprocessed csv files from raw data files (XML).
 python processing.py
 ```
 
-### Training
+### Training / Inference
 This is for training and testing model.
 The code below will run training and test for each model.
 ```sh
