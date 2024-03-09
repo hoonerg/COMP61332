@@ -1,5 +1,6 @@
 import torch.nn as nn
 
+# Defines an LSTM-based classifier for relation classification with a linear output layer.
 class LSTMRelationClassifier(nn.Module):
     def __init__(self, embedding_dim, hidden_dim, output_dim):
         super(LSTMRelationClassifier, self).__init__()

@@ -28,6 +28,7 @@ def main(model_type=None):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     dataset_path = 'dataset/train_dataset_dataframe.csv'
+    # Loading the train dataset CSV for training the models 
     df = pd.read_csv(dataset_path)
 
     if model_type is None:
@@ -43,6 +44,7 @@ def main(model_type=None):
         X_train = vectorize_sentence(X_train_sentences, vocab, max_word_length)
         X_test = vectorize_sentence(X_test_sentences , vocab, max_word_length)
         
+        #Creating an SVC model with linear Kernel
         model = SVC(kernel='linear')
         model.fit(X_train, y_train)
         score = model.score(X_test, y_test)
@@ -67,7 +69,9 @@ def main(model_type=None):
         # Generate data loaders
         X_train, X_val, y_train, y_val, label_encoder = create_dataset(df)
         
+        # Creates the training data loader with data shuffling
         train_loader = generate_loader(df, X_train, y_train, vocab, batch_size=32, shuffle=True)
+        # Creates the validation data loader with data shuffling disabled.
         val_loader = generate_loader(df, X_val, y_val, vocab, batch_size=32, shuffle=False)
 
         # Initialize model, optimizer, and criterion
@@ -80,7 +84,7 @@ def main(model_type=None):
         early_stopping = EarlyStopping(patience=15, verbose=True, path=model_save_path)
 
         num_epochs = 300
-
+        # Training the LSTM with 300 epochs
         for epoch in range(num_epochs):
             model.train()
 
@@ -96,6 +100,7 @@ def main(model_type=None):
                 
                 total_loss += loss.item()
 
+            # Calculating training and validation loss
             train_loss = total_loss / len(train_loader)
             val_loss = evaluate(model, val_loader, criterion, device)
 

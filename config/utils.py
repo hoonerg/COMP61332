@@ -1,6 +1,8 @@
 import torch
 import os
 
+# Implements an early stopping mechanism to halt training when validation loss remains same/similar 
+# and saves the best model.
 class EarlyStopping:
     def __init__(self, patience=7, verbose=False, delta=0, path='best_model.pth'):
         self.patience = patience

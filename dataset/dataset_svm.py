@@ -19,6 +19,7 @@ def find_max_word_length(sentences):
     return max(max_lengths)
 
 def vectorize_sentence(sentences, vocab, max_length= 30):
+    # To convert each sentence into a feature vector
     vector_lists = []
     
     for sentence in sentences:
@@ -26,9 +27,11 @@ def vectorize_sentence(sentences, vocab, max_length= 30):
         vector_lists.append(vector)
     
     # Conversion to a 2-D numpy array of size (number of sentences, no: of features) 
+    # number of features: 12000
     return np.array(vector_lists)
         
 def vectorize_words(sentence, vocab, max_length=30):
+    #To get the embdedded representation of each word
     tokens = sentence.split()
     vector_size = None
     # vectorized_text consists of the feature vector representation of each word, 
@@ -57,7 +60,7 @@ def vectorize_words(sentence, vocab, max_length=30):
     return np.array(vectorized_text).flatten()
 
 def get_test_dataset(dataset, label_encoder, vocab):
-    # Returns embedded form for both X and y
+    # Returns embedded form for both X and y for the testing
     X_test = dataset['normalized_sentence'].values
 
     X = vectorize_sentence(X_test, vocab, 40)

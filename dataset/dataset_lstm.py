@@ -11,6 +11,7 @@ word2vec_path = 'GoogleNews-vectors-negative300.bin.gz'
 word2vec = KeyedVectors.load_word2vec_format(word2vec_path, binary=True)
 
 class Vocabulary:
+    # Manages a vocabulary and word vectors, providing embeddings or zero vectors for unknown words.
     def __init__(self, word2vec):
         self.word2vec = word2vec
         self.embedding_dim = word2vec.vector_size
@@ -25,6 +26,7 @@ class Vocabulary:
         return len(self.word2vec.key_to_index)
 
 class RelationDataset(Dataset):
+    # A dataset class for text-label pairs, converting texts to vectors vocab and label_encoder.
     def __init__(self, texts, labels, vocab):
         self.texts = texts
         self.labels = labels
@@ -39,6 +41,7 @@ class RelationDataset(Dataset):
         return torch.tensor(vectorized_text, dtype=torch.float), torch.tensor(self.labels[item], dtype=torch.long)
   
 class UserInputDataset(Dataset):
+    # A dataset class that converts user input texts into vectors using a vocab.
     def __init__(self, texts, vocab):
         self.texts = [texts]
         self.vocab = vocab
@@ -52,6 +55,7 @@ class UserInputDataset(Dataset):
         return torch.tensor(vectorized_text, dtype=torch.float)
         
 def collate_fn(batch):
+    # Combines a batch of data by padding texts to the same length and stacking labels.
     texts, labels = zip(*batch)
     
     max_len = max(text.size(0) for text in texts)
@@ -64,14 +68,18 @@ def collate_fn(batch):
     return padded_texts, labels
 
 def generate_loader(dataset, texts, labels, vocab, batch_size=32, shuffle=True):
+    # Creates a data loader for a dataset with specified batch size and shuffle option.
     dataset = RelationDataset(texts, labels, vocab)
     loader = DataLoader(dataset, batch_size=batch_size, shuffle=shuffle, collate_fn=collate_fn)
     return loader
 
 def create_dataset(dataset):
+    # Splits a given dataset into training and validation sets
+    
     # Tokenization and Encoding
     texts = dataset['normalized_sentence'].values
     label_encoder = LabelEncoder()
+    # Encodes the label
     labels = label_encoder.fit_transform(dataset['relation_type'].values)
 
     X_train, X_val, y_train, y_val = train_test_split(texts, labels, test_size=0.2, random_state=42)
@@ -79,6 +87,7 @@ def create_dataset(dataset):
     return X_train, X_val, y_train, y_val, label_encoder
 
 def load_test_data(test_dataset, vocab, label_encoder):
+    # Loads test data for evaluation, using predefined vocab and label encoder.
     texts = test_dataset['normalized_sentence'].values
     labels = label_encoder.transform(test_dataset['relation_type'].values)
     
