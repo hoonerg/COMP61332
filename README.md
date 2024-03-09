@@ -45,3 +45,33 @@ The code below will run training and test for each model. [model] should be SVM 
 ```sh
 python main.py [model]
 ```
+
+## Structure
+
+```sh
+.
+├── config
+│   ├── model.py  #LSTM model
+│   └── utils.py  #utils for LSTM
+├── dataset
+│   ├── DDI_Corpus # Dataset
+│   │   ├── __init__.py
+│   │   ├── dataset_lstm.py  #DataLoader for LSTM
+│   │   ├── dataset_svm.py  #DataLoader for SVM
+│   │   ├── processing.py  #XML -> CSV
+│   │   ├── processing_suffix.py  #XML -> CSV
+│   │   ├── test_dataset_dataframe.csv  #test data
+│   │   └── train_dataset_dataframe.csv  #training data
+│   └── types
+├── results
+│   └── checkpoints
+├── .gitignore
+├── README.md
+├── main.py #executes training and test
+├── requirements.txt  #list of python packages
+├── setup.py  #downloads large files (4.7GB)
+├── test.py  #test
+├── train.py  #training
+└── user_infer.py  #inference
+
+```
