@@ -25,10 +25,10 @@ python user_infer.py
 This will show you user input form four times.
 Type sentence, model type (SVM or LSTM), the first entity, and the second entity.
 ```sh
-Enter the sentence: Sentence here without quotation marks.
-Enter Model Type (SVM/LSTM): Either SVM or LSTM.
-Enter the first entity: First entity here. Can be a word or group of words
-Enter the second entity: Second entity here. Can be a word or group of words
+Enter the sentence: [Sentence here without quotation marks.]
+Enter Model Type (SVM/LSTM): [Either SVM or LSTM.]
+Enter the first entity: [First entity here. Can be a word or group of words]
+Enter the second entity: [Second entity here. Can be a word or group of words]
 ```
 
 ## How to train the models
