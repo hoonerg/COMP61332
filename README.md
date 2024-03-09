@@ -41,8 +41,7 @@ python processing.py
 
 ### Training / Inference
 This is for training and testing model.
-The code below will run training and test for each model.
+The code below will run training and test for each model. [model] should be SVM or LSTM.
 ```sh
-python main.py SVM
-python main.py LSTM
+python main.py [model]
 ```
