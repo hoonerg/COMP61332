@@ -1,5 +1,4 @@
 import pandas as pd
-from sklearn.preprocessing import LabelEncoder
 from dataset.dataset_lstm import Vocabulary
 from gensim.models import KeyedVectors
 import numpy as np

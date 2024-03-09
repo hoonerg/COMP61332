@@ -54,12 +54,11 @@ python main.py [model]
 │   ├── model.py  #LSTM model
 │   └── utils.py  #utils for LSTM
 ├── dataset
-│   ├── DDI_Corpus # Dataset
+│   ├── DDI_Corpus # Original Dataset
 │   │   ├── __init__.py
 │   │   ├── dataset_lstm.py  #DataLoader for LSTM
 │   │   ├── dataset_svm.py  #DataLoader for SVM
 │   │   ├── processing.py  #XML -> CSV
-│   │   ├── processing_suffix.py  #XML -> CSV
 │   │   ├── test_dataset_dataframe.csv  #test data
 │   │   └── train_dataset_dataframe.csv  #training data
 │   └── types

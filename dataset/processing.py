@@ -53,6 +53,7 @@ def normalize_sentence_by_char_offset(sentence_text, entity_e1, entity_e2, stop_
     return filtered_sentence
 
 def get_entities_with_char_offset(sentence_dom):
+    # Identify entities based on 'charOffset' from xml dataset
     entities = sentence_dom.getElementsByTagName('entity')
     entity_list = []
     for entity in entities:
@@ -65,6 +66,7 @@ def get_entities_with_char_offset(sentence_dom):
     return entity_list
 
 def get_dataset_dataframe(directory, dataset_csv_file, types):
+    # Identify entities and sentence from original xml dataset
     stop_words = set(stopwords.words('english')) | set(['the'])
 
     data_records = []
@@ -100,7 +102,7 @@ def get_dataset_dataframe(directory, dataset_csv_file, types):
 
 if __name__ == "__main__":
     types = set()
-    directory_1 = "dataset/DDICorpus/Train/merged_version/"
+    directory_1 = "dataset/DDICorpus/Train/merged_version/" # Path to original dataset
     dataset_csv_file = 'dataset/train_dataset_dataframe.csv'
     df1, types = get_dataset_dataframe(directory_1, dataset_csv_file, types)
     

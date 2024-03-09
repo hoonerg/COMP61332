@@ -1,15 +1,12 @@
-from sklearn.metrics import classification_report
-from dataset.dataset_svm import vectorize_sentence, get_test_dataset
 import torch
-from dataset.dataset_lstm import load_test_data, UserInputDataset
-                            
 from torch.utils.data import DataLoader
-from train import trained_model_pickle_file
 import pandas as pd
-import os
 import pickle
+from sklearn.metrics import f1_score, precision_score, recall_score, classification_report
+from dataset.dataset_svm import vectorize_sentence, get_test_dataset
 from config.model import LSTMRelationClassifier
-from sklearn.metrics import f1_score, precision_score, recall_score
+from dataset.dataset_lstm import load_test_data, UserInputDataset          
+from train import trained_model_pickle_file
 
 def predict(model_type=None, user_input=None, normalized_sentence= None):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')

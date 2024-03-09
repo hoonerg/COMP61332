@@ -2,23 +2,14 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from itertools import combinations
-from sklearn.metrics import f1_score
 from nltk import ngrams
-# from sklearn.cross_validation import train_test_split
-# In the new version, the train test split function 
-# is moved into sklearn.model_selection
 from sklearn.svm import SVC
-from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
-# from dataset.dataset_svm import extract_training_data_from_dataframe
 from dataset.dataset_svm import find_max_word_length, vectorize_sentence
 from dataset.dataset_lstm import create_dataset, generate_loader, vocab
 from config.model import LSTMRelationClassifier
 from config.utils import EarlyStopping, evaluate
-import os
 import pickle
-import numpy as np
 
 
 trained_model_pickle_file = 'results/checkpoints/svm_best_model.pkl'
